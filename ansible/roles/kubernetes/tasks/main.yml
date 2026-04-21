@@ -1,0 +1,35 @@
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name: 
+      - curl
+      - ca-certificates
+      - open-iscsi
+
+- name: Download k3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s-install.sh
+    mode: "0755"
+
+- name: Install k3s
+  ansible.builtin.command:
+    cmd: /tmp/k3s-install.sh 
+    creates: "{{ k3s_install_dir }}/k3s"
+  environment: 
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+
+- name: Ensure k3s service is enabled and started
+  ansible.builtin.systemd:
+    name: k3s
+    enabled: true
+    state: started
+
+- name: Set kubeconfig file permissions
+  ansible.builtin.file:
+    path: /etc/rancher/k3s/k3s.yaml
+    mode: "0644"
