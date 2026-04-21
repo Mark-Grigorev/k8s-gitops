@@ -1,0 +1,29 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+  spec:
+    acme:
+      server: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: 2204.01030@manas.edu.kg
+      privateKeySecretRef:
+        name: letsencrypt-staging
+      solvers:
+        - http01:
+            ingrss: 
+              ingressClassName: nginx
+---
+apiVersion: cert-manager.io/v1
+ind: ClusterIssuer
+metadata:
+  name: letsecrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: 2204.01030@manas.edu.kg
+    privateKeySecretRef: 
+      name: letsencryp-prod
+    solvers:
+      - http01:
+          ingress: 
+            ingressClassName: nginx
