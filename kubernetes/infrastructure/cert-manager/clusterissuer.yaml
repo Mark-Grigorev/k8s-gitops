@@ -14,7 +14,7 @@ metadata:
               ingressClassName: nginx
 ---
 apiVersion: cert-manager.io/v1
-ind: ClusterIssuer
+kind: ClusterIssuer
 metadata:
   name: letsecrypt-prod
 spec:
