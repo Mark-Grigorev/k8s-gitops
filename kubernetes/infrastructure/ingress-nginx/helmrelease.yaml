@@ -7,7 +7,7 @@ spec:
   interval: 1h
   chart:
     spec:
-      cahrt: ingress-nginx
+      cart: ingress-nginx
       version: "4.12.x"
       sourceRef:
         kind: HelmRepository
