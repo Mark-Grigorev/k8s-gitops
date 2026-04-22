@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: nginx:alpine
+          image: ghcr.io/mark-grigorev/alexstav:latest
           ports:
             - containerPort: 80
           resources:
