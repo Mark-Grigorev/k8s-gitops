@@ -1,12 +1,13 @@
 - name: Setup kubernetes node
   hosts: k8s_cluster
   become: true
-
+  tags: kubernetes
   roles:
     - role: kubernetes
 
 - name: Setup firewall
   hosts: all
   become: true
+  tags: firewall
   roles:
     - firewall

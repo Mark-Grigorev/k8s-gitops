@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alexstav
+  namespace: alexstav
+spec:
+  selector:
+    app: alexstav
+  ports:
+    - port: 80
+      targetPort: 80

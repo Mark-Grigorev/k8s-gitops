@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alexstav
+  namespace: alexstav
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  spec:
+    ingressClassName: nginx
+    tls:
+      - hosts:
+          - alexstav.dev
+        secretName: alexstav-tls
+    rules:
+      - host: alexstav.dev
+        http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: alexstav
+                  port:
+                    number: 80

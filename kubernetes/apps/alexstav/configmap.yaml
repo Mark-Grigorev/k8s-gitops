@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alexstav-html
+  namespace: alexstav
+data: 
+  index.html: |
+    <!DOCTYPE html>
+    <html><body><h1>alexstav.dev</h1></body></html>
