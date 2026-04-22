@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alexstav
+  name: fingo
   namespace: apps
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alexstav
+      app: fingo
   template:
     metadata:
       labels:
-        app: alexstav
+        app: fingo
     spec:
       containers:
         - name: nginx
-          image: ghcr.io/mark-grigorev/alexstav:latest
+          image: ghcr.io/mark-grigorev/fingo:latest
           ports:
             - containerPort: 80
           resources:

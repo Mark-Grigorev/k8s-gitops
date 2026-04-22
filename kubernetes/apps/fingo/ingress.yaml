@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: alexstav
+  name: fingo
   namespace: apps
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -9,16 +9,16 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - alexstav.dev
-      secretName: alexstav-tls
+        - fingo.ink
+      secretName: fingo-tls
   rules:
-    - host: alexstav.dev
+    - host: fingo.ink
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: alexstav
+                name: fingo
                 port:
                   number: 80

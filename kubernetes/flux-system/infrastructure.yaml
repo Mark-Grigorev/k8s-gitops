@@ -41,3 +41,38 @@ spec:
   dependsOn:
     - name: infrastructure
     - name: ingress-nginx
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: fingo
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./kubernetes/apps/fingo
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: infrastructure
+    - name: ingress-nginx
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: mark-alldevops
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./kubernetes/apps/mark-alldevops
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: infrastructure
+    - name: ingress-nginx
+

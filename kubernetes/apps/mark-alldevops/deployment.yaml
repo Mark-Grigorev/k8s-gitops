@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alexstav
+  name: mark-alldevops
   namespace: apps
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alexstav
+      app: mark-alldevops
   template:
     metadata:
       labels:
-        app: alexstav
+        app: mark-alldevops
     spec:
       containers:
         - name: nginx
-          image: ghcr.io/mark-grigorev/alexstav:latest
+          image: ghcr.io/mark-grigorev/mark-alldevops:latest
           ports:
             - containerPort: 80
           resources:
