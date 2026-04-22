@@ -31,13 +31,13 @@ kind: Kustomization
 metadata:
   name: alexstav
   namespace: flux-system
-  spec:
-    interval: 10m
-    path: ./kubernetes/apps/alexstav
-    prune: true
-    sourceRef:
-      kind: GitRepository
-      name: flux-system
-    dependsOn:
-      - name: infrastructure
-      - name: ingress-nginx
+spec:
+  interval: 10m
+  path: ./kubernetes/apps/alexstav
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: infrastructure
+    - name: ingress-nginx
