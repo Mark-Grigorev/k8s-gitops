@@ -4,3 +4,9 @@
 
   roles:
     - role: kubernetes
+
+- name: Setup firewall
+  hosts: all
+  become: true
+  roles:
+    - firewall

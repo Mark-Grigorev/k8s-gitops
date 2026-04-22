@@ -5,7 +5,7 @@
 
 - name: Install required packages
   ansible.builtin.apt:
-    name: 
+    name:
       - curl
       - ca-certificates
       - open-iscsi
@@ -18,9 +18,9 @@
 
 - name: Install k3s
   ansible.builtin.command:
-    cmd: /tmp/k3s-install.sh 
+    cmd: /tmp/k3s-install.sh
     creates: "{{ k3s_install_dir }}/k3s"
-  environment: 
+  environment:
     INSTALL_K3S_VERSION: "{{ k3s_version }}"
 
 - name: Ensure k3s service is enabled and started

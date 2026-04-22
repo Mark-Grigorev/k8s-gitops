@@ -1,4 +1,4 @@
-# k3s-gitops
+# k8s-gitops
 
 Пет-проект для изучения IaC (Ansible) и GitOps-подхода.  
 Цель — поднять production-like окружение на одном удалённом сервере.
@@ -6,6 +6,7 @@
 ---
 
 ## Архитектура
+<details>
 
 ```
                         Internet
@@ -26,14 +27,18 @@
                     ┌──────▼──────┐
                     │ PostgreSQL  │  основная БД
                     └─────────────┘
+
 ```
 
 **GitOps-слой (Flux v2)** следит за этим репозиторием и применяет изменения в кластере автоматически.  
 **Ansible** отвечает за первичную подготовку сервера (конфигурация ОС, установка k8s).
 
+</details>
+
 ---
 
 ## Компоненты
+<details>
 
 | Компонент         | Роль                                      | ~RAM        |
 |-------------------|-------------------------------------------|-------------|
@@ -47,10 +52,13 @@
 | Nginx             | Раздача статики                           | 30 MB       |
 | **Итого**         |                                           | **~1.3 GB** |
 
+</details>
+
 ---
 
 ## Установка кластера вручную
 
+<details>
 ### Подготовка ОС
 
 Перед установкой Kubernetes необходимо подготовить систему.
@@ -190,6 +198,8 @@ kubectl taint nodes <node-name> node-role.kubernetes.io/control-plane:NoSchedule
 kubectl patch deployment ingress-nginx-controller -n ingress-nginx --type=json -p='[{"op":"add","path":"/spec/template/spec/hostNetwork","value":true}]'
 ```
 
+</details>
+
 ---
 
 ## Стек
@@ -210,10 +220,30 @@ kubectl patch deployment ingress-nginx-controller -n ingress-nginx --type=json -
 ## Структура репозитория
 
 ```
-k3s-gitops/
+k8s-gitops/
 ├── ansible/            # Конфигурация ОС и установка k8s компонентов
 └── kubernetes/
     ├── flux-system/    # Bootstrapped Flux manifests
     ├── apps/           # HelmRelease / Kustomize для сервисов
     └── infrastructure/ # Nginx Ingress, cert-manager, storage classes
 ```
+
+
+## Разработка
+### Необходимо
+ - Python 3.10+
+ - `ansible` & `ansible-lint`
+    ```bash
+       pip install ansible ansible-lint
+    ```
+ - Коллекция `community.general`:
+   ```bash
+       ansible-galaxy collection install community.general
+    ```
+ - `pre-commit`:
+    ```bash
+       pip install pre-commit
+       pre-commit install
+    ```
+После `pre-commit install` - при каждом коммите будет автоматически запускаться `ansible-lint`.
+Проверить руками: `pre-commit run --all-files` | `ansible-lint ansible/`
