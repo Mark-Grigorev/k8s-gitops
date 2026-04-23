@@ -61,10 +61,10 @@ spec:
     - name: local-path
 
 ---
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  vame: local-path
+  name: local-path
   namespace: flux-system
 spec:
   interval: 10m
