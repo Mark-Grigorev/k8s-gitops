@@ -58,3 +58,20 @@ spec:
     name: flux-system
   dependsOn:
     - name: infrastructure
+    - name: local-path
+
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  vame: local-path
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./kubernetes/infrastructure/local-path
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: infrastructure
