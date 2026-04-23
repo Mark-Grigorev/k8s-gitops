@@ -24,8 +24,9 @@ spec:
           export APP_BASE_URL="{{ .Data.data.APP_BASE_URL }}"
           export RESEND_API_KEY="{{ .Data.data.RESEND_API_KEY }}"
           export TOKEN_DURATION="{{ .Data.data.TOKEN_DURATION }}"
-          {{ - end }}
+          {{- end }}
     spec:
+      serviceAccountName: fingo
       containers:
         - name: nginx
           image: ghcr.io/mark-grigorev/fingo:latest
@@ -38,3 +39,4 @@ spec:
             limits:
               cpu: 20m
               memory: 64Mi
+      
