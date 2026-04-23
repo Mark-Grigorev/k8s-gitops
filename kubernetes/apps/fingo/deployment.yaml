@@ -43,8 +43,8 @@ spec:
           image: ghcr.io/mark-grigorev/fingo:latest
           resources:
            requests: 
-             cpu: 10m
-             memory: 32Mi
+             cpu: 150m
+             memory: 150Mi
            limits:
-             cpu: 20m
-             memory: 64Mi
+             cpu: 200m
+             memory: 250Mi
