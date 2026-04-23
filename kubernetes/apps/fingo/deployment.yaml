@@ -29,15 +29,22 @@ spec:
       serviceAccountName: fingo
       containers:
         - name: nginx
-          image: ghcr.io/mark-grigorev/fingo:latest
+          image: ghcr.io/mark-grigorev/fingo-nginx:latest
           ports:
             - containerPort: 80
-              targetPort: 8080
           resources:
             requests: 
               cpu: 10m
-              memory: 32Mi
+              memory: 16Mi
             limits:
               cpu: 20m
-              memory: 64Mi
-      
+              memory: 32Mi
+        - name: app
+          image: ghcr.io/mark-grigorev/fingo:latest
+          resources:
+           requests: 
+             cpu: 10m
+             memory: 32Mi
+           limits:
+             cpu: 20m
+             memory: 64Mi
