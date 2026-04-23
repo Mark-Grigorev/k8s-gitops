@@ -32,6 +32,7 @@ spec:
           image: ghcr.io/mark-grigorev/fingo:latest
           ports:
             - containerPort: 80
+              targetPort: 8080
           resources:
             requests: 
               cpu: 10m
