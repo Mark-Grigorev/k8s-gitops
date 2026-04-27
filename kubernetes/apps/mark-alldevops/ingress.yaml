@@ -9,10 +9,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - mark-alldevops.ru
+        - mark.alldevops.ru
       secretName: mark-alldevops-tls
   rules:
-    - host: mark-alldevops.ru
+    - host: mark.alldevops.ru
       http:
         paths:
           - path: /
