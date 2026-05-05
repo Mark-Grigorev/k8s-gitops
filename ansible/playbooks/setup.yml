@@ -11,3 +11,10 @@
   tags: firewall
   roles:
     - firewall
+
+- name: Setup grafana
+  hosts: all
+  become: true
+  tags: grafana
+  roles:
+    - grafana

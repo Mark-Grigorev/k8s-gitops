@@ -49,3 +49,9 @@
 - name: Enable unf
   community.general.ufw:
     state: enabled
+
+- name: Allow Grafana
+  community.general.ufw:
+    rule: allow
+    port: "3000"
+    proto: tcp
