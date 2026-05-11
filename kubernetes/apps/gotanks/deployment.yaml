@@ -25,6 +25,17 @@ spec:
     spec:
         - name: gotanks
           image: ghcr.io/mark-grigorev/gotanks:latest
+          env:
+            - name: APP_PORT
+              value: "8080"
+            - name: JWT_DURATION
+              value: "24h"
+            - name: TICK_RATE
+              value: "20"
+            - name: MAX_PLAYERS
+              value: "4"
+          ports:
+            - containerPort: 8080
           resources:
            requests: 
              cpu: 150m
