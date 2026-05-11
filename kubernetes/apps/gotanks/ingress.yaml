@@ -12,7 +12,7 @@ spec:
         - tanks.fingo.ink
       secretName: tanks.fingo-tls
   rules:
-    - host: tanks..fingo.ink
+    - host: tanks.fingo.ink
       http:
         paths:
           - path: /

@@ -23,20 +23,7 @@ spec:
           export JWT_SECRET="{{ .Data.data.JWT_SECRET}}"
           {{- end }}
     spec:
-      serviceAccountName: gotanks
-      containers:
-        - name: nginx
-          image: ghcr.io/mark-grigorev/gotanks-nginx:latest
-          ports:
-            - containerPort: 80
-          resources:
-            requests: 
-              cpu: 50m
-              memory: 50Mi
-            limits:
-              cpu: 100m
-              memory: 100Mi
-        - name: app
+        - name: gotanks-app
           image: ghcr.io/mark-grigorev/gotanks:latest
           resources:
            requests: 
