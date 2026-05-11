@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gotanks
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gotanks
+  template:
+    metadata:
+      labels:
+        app: gotanks
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "gotanks"
+        vault.hashicorp.com/agent-inject-secret-config: "secret/data/gotanks"
+        vault.hashicorp.com/agent-inject-template-config: |
+          {{- with secret "secret/data/gotanks" -}}
+          export DB_CONN_STRING="{{ .Data.data.DB_CONN_STRING }}"
+          export BOT_TOKEN="{{ .Data.data.BOT_TOKEN }}"
+          export JWT_SECRET="{{ .Data.data.JWT_SECRET}}"
+          {{- end }}
+    spec:
+      serviceAccountName: gotanks
+      containers:
+        - name: nginx
+          image: ghcr.io/mark-grigorev/gotanks-nginx:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests: 
+              cpu: 50m
+              memory: 50Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+        - name: app
+          image: ghcr.io/mark-grigorev/gotanks:latest
+          resources:
+           requests: 
+             cpu: 150m
+             memory: 150Mi
+           limits:
+             cpu: 200m
+             memory: 250Mi
