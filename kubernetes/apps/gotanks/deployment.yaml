@@ -27,7 +27,7 @@ spec:
       containers:
         - name: gotanks
           image: ghcr.io/mark-grigorev/gotanks:latest
-          command: ["/bin/sh", "-c", "source /vault/secrets/config && /app"]                                                   
+          command: ["/bin/sh", "-c", "source /vault/secrets/config && /app/app"]                                                   
           env:
             - name: APP_PORT                                                                                                   
               value: "8080"
