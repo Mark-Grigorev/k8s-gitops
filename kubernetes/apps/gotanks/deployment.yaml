@@ -23,7 +23,7 @@ spec:
           export JWT_SECRET="{{ .Data.data.JWT_SECRET}}"
           {{- end }}
     spec:
-        - name: gotanks-app
+        - name: gotanks
           image: ghcr.io/mark-grigorev/gotanks:latest
           resources:
            requests: 
