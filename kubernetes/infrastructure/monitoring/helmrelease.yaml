@@ -26,11 +26,3 @@ spec:
         nodePort: 30900
       prometheusSpec:
         retention: 4d
-        storageSpec:
-          volumeClaimTemplate:
-            spec:
-              storageClassName: local-path
-              accessModes: ["ReadWriteOnce"]
-              resources:
-                requests:
-                  storage: 1Gi
