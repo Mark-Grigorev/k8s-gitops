@@ -18,10 +18,12 @@ spec:
       enabled: false
     
     alertmanager:
-    enabled: false
+      enabled: false
+
     prometheus:
-      service: NodePort
-      nodePort: 30900
+      service: 
+        type: NodePort
+        nodePort: 30900
       prometheusSpec:
         retention: 4d
         storageSpec:
