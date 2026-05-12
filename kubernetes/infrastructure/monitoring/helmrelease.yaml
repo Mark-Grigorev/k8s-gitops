@@ -1,0 +1,35 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: "84.5.0"
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+    values:
+      grafana:
+        enabled: false
+      
+      alertmanager:
+      enabled: false
+
+      prometheus:
+        service: NodePort
+        nodePort: 30900
+        prometheusSpec:
+          retention: 4d
+          storageSpec:
+            volumeClaimTemplate:
+              spec:
+                storageClassName: local-path
+                accessModes: ["ReadWriteOnce"]
+                resources:
+                  requests:
+                    storage: 1Gi
