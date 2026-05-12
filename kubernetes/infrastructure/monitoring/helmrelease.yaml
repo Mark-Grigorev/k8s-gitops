@@ -13,23 +13,22 @@ spec:
         kind: HelmRepository
         name: prometheus-community
         namespace: flux-system
-    values:
-      grafana:
-        enabled: false
-      
-      alertmanager:
+  values:
+    grafana:
       enabled: false
-
-      prometheus:
-        service: NodePort
-        nodePort: 30900
-        prometheusSpec:
-          retention: 4d
-          storageSpec:
-            volumeClaimTemplate:
-              spec:
-                storageClassName: local-path
-                accessModes: ["ReadWriteOnce"]
-                resources:
-                  requests:
-                    storage: 1Gi
+    
+    alertmanager:
+    enabled: false
+    prometheus:
+      service: NodePort
+      nodePort: 30900
+      prometheusSpec:
+        retention: 4d
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: local-path
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 1Gi
