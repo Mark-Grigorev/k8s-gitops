@@ -13,3 +13,21 @@ spec:
   claimRef:
     name: data-vault-0
     namespace: vault
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  kind: prometheus-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retrain
+  hostPath:
+    path: /var/lib/prometheus
+  claimRef:
+    name: prometheus-kube-prometheus-stack-prometheus-db-prometheus-kube-prometheus-stack-prometheus-0
+    namespace: monitoring
