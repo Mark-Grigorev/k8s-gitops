@@ -19,13 +19,13 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  kind: prometheus-pv
+  name: prometheus-pv
 spec:
   capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retrain
+  persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /var/lib/prometheus
   claimRef:
