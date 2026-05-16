@@ -62,7 +62,7 @@ patches:
       apiVersion: apps/v1
       kind: Deployment
       metadata:
-        name: notifications-controller
+        name: notification-controller
         namespace: flux-system
       spec:
         template:
