@@ -3,3 +3,76 @@ kind: Kustomization
 resources:
 - gotk-components.yaml
 - gotk-sync.yaml
+patches:
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: helm-controller
+        namespace: flux-system
+      spec:
+        template:
+          spec:
+            containers:
+              - name: manager
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 200Mi
+                  limits:
+                    cpu: 250m
+                    memory: 350Mi
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: kustomize-controller
+        namespace: flux-system
+      spec:
+        template:
+          spec:
+            containers:
+              - name: manager
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 200Mi
+                  limits:
+                    cpu: 250m
+                    memory: 350Mi
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: source-controller
+        namespace: flux-system
+      spec:
+        template:
+          spec:
+            containers:
+              - name: manager
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 200Mi
+                  limits:
+                    cpu: 250m
+                    memory: 350Mi
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: notifications-controller
+        namespace: flux-system
+      spec:
+        template:
+          spec:
+            containers:
+              - name: manager
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 200Mi
+                  limits:
+                    cpu: 250m
+                    memory: 350Mi
