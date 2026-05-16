@@ -1,7 +1,7 @@
 # k8s-gitops
 
 Пет-проект для изучения IaC (Ansible) и GitOps-подхода.  
-Цель — поднять production-like окружение на одном удалённом сервере.
+Цель — поднять production-like окружение на одном удалённом сервере с несколькими реальными приложениями.
 
 ---
 
@@ -9,29 +9,32 @@
 <details>
 
 ```
-                        Internet
-                           │
-                        80/443
-                           │
-                    ┌──────▼──────┐
-                    │Nginx Ingress│  Ingress / TLS termination (hostNetwork)
-                    └──────┬──────┘
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-   ┌──────▼──────┐  ┌──────▼──────┐  ┌──────▼──────┐
-   │  Nginx      │  │   Go app    │  │  (будущие   │
-   │  (static)   │  │  (backend)  │  │   сервисы)  │
-   └─────────────┘  └──────┬──────┘  └─────────────┘
-                           │
-                    ┌──────▼──────┐
-                    │ PostgreSQL  │  основная БД
-                    └─────────────┘
-
+                          Internet
+                             │
+                          80/443
+                             │
+                      ┌──────▼──────┐
+                      │Nginx Ingress│  hostNetwork, TLS termination
+                      └──────┬──────┘
+                             │
+       ┌─────────────────────┼──────────────────────┐
+       │                     │                      │
+┌──────▼──────┐       ┌──────▼──────┐       ┌──────▼──────┐       ┌──────▼──────┐
+│   fingo     │       │   gotanks   │       │  alexstav   │       │mark-alldevops│
+│ Go + nginx  │       │  Go (game)  │       │   nginx     │       │    nginx     │
+│ fingo.ink   │       │tanks.fingo  │       │  (static)   │       │  (static)   │
+└──────┬──────┘       └──────┬──────┘       └─────────────┘       └─────────────┘
+       │                     │
+       └──────────┬──────────┘
+                  │
+           ┌──────▼──────┐         ┌──────────────┐
+           │ PostgreSQL  │         │    Vault      │  секреты (DB, API keys, JWT)
+           │  (на хосте) │         │  (injector)  │
+           └─────────────┘         └──────────────┘
 ```
 
 **GitOps-слой (Flux v2)** следит за этим репозиторием и применяет изменения в кластере автоматически.  
-**Ansible** отвечает за первичную подготовку сервера (конфигурация ОС, установка k8s).
+**Ansible** отвечает за первичную подготовку сервера (конфигурация ОС, установка k8s, Grafana на хосте).
 
 </details>
 
@@ -40,17 +43,34 @@
 ## Компоненты
 <details>
 
-| Компонент         | Роль                                      | ~RAM        |
-|-------------------|-------------------------------------------|-------------|
-| k8s (kubeadm)     | Kubernetes (single-node, bare-metal)      | 500 MB      |
-| Cilium            | CNI, сеть между подами                    | 100 MB      |
-| Nginx Ingress     | Ingress-контроллер, TLS (Let's Encrypt)   | 60 MB       |
-| Flux v2           | GitOps-оператор (sync этого репо)         | 150 MB      |
-| cert-manager      | Автоматические TLS сертификаты            | 60 MB       |
-| Go app            | Основной бэкенд                           | 80 MB       |
-| PostgreSQL        | Основная реляционная БД                   | 300 MB      |
-| Nginx             | Раздача статики                           | 30 MB       |
-| **Итого**         |                                           | **~1.3 GB** |
+**Инфраструктура кластера**
+
+| Компонент              | Роль                                         | ~RAM      |
+|------------------------|----------------------------------------------|-----------|
+| k8s (kubeadm)          | Kubernetes (single-node, bare-metal)         | 500 MB    |
+| Cilium                 | CNI, сеть между подами                       | 100 MB    |
+| Nginx Ingress          | Ingress-контроллер, hostNetwork (80/443)     | 300 MB    |
+| Flux v2                | GitOps-оператор (kustomize + helm controller)| 150 MB    |
+| cert-manager           | Автоматические TLS сертификаты (Let's Encrypt)| 60 MB   |
+| HashiCorp Vault        | Управление секретами + Agent Injector        | 256 MB    |
+| kube-prometheus-stack  | Prometheus (мониторинг, retention 4d)        | ~300 MB   |
+| local-path provisioner | hostPath PV для Vault и Prometheus           | —         |
+
+**Приложения (namespace: apps)**
+
+| Приложение     | Описание                                    | Домен            | ~RAM  |
+|----------------|---------------------------------------------|------------------|-------|
+| fingo          | Go backend + nginx sidecar, секреты из Vault| fingo.ink        | 250 MB|
+| gotanks        | Go multiplayer-игра (tanks), секреты из Vault| tanks.fingo.ink  | 250 MB|
+| alexstav       | Статический сайт (nginx)                    | —                | 64 MB |
+| mark-alldevops | Статический сайт (nginx)                    | —                | 64 MB |
+
+**На хосте (вне кластера)**
+
+| Компонент  | Роль                              |
+|------------|-----------------------------------|
+| PostgreSQL | Основная БД для fingo и gotanks   |
+| Grafana    | Дашборды (управляется через Ansible) |
 
 </details>
 
@@ -204,16 +224,18 @@ kubectl patch deployment ingress-nginx-controller -n ingress-nginx --type=json -
 
 ## Стек
 
-- **Конфигурация ОС**: Ansible
-- **Оркестрация**: Kubernetes (kubeadm, single-node)
+- **Конфигурация ОС**: Ansible (firewall, Grafana, k8s bootstrap)
+- **Оркестрация**: Kubernetes (kubeadm, single-node, bare-metal)
 - **Container runtime**: containerd + crun
 - **CNI**: Cilium
 - **GitOps**: Flux v2 — Kustomize + HelmRelease
-- **Ingress**: Nginx Ingress Controller
+- **Ingress**: Nginx Ingress Controller (hostNetwork)
 - **TLS**: cert-manager + Let's Encrypt
-- **БД**: PostgreSQL (in-cluster, PVC)
-- **Бэкенд**: Go-приложение
-- **Статика**: Nginx
+- **Секреты**: HashiCorp Vault + Vault Agent Injector
+- **Мониторинг**: kube-prometheus-stack (Prometheus) + Grafana на хосте
+- **БД**: PostgreSQL на хосте
+- **Хранилище**: hostPath PV (local-path provisioner)
+- **Приложения**: fingo (Go + nginx), gotanks (Go), alexstav (nginx), mark-alldevops (nginx)
 
 ---
 
@@ -221,13 +243,34 @@ kubectl patch deployment ingress-nginx-controller -n ingress-nginx --type=json -
 
 ```
 k8s-gitops/
-├── ansible/            # Конфигурация ОС и установка k8s компонентов
+├── ansible/                  # Конфигурация ОС, firewall, Grafana
+│   ├── inventory/
+│   ├── playbooks/
+│   └── roles/
+│       ├── firewall/
+│       ├── grafana/
+│       └── kubernetes/
 └── kubernetes/
-    ├── flux-system/    # Bootstrapped Flux manifests
-    ├── apps/           # HelmRelease / Kustomize для сервисов
-    └── infrastructure/ # Nginx Ingress, cert-manager, storage classes
+    ├── flux-system/          # Bootstrapped Flux manifests + патчи ресурсов контроллеров
+    ├── apps/                 # Приложения
+    │   ├── fingo/            # Go backend + nginx sidecar (fingo.ink)
+    │   ├── gotanks/          # Go multiplayer игра (tanks.fingo.ink)
+    │   ├── alexstav/         # Статический сайт
+    │   └── mark-alldevops/   # Статический сайт
+    └── infrastructure/
+        ├── ingress-nginx/    # Ingress-контроллер (hostNetwork)
+        ├── cert-manager/     # TLS сертификаты
+        ├── vault/            # HashiCorp Vault + Injector
+        ├── monitoring/       # kube-prometheus-stack
+        └── local-path/       # hostPath PV для Vault и Prometheus
 ```
 
+
+## TODO
+
+- [ ] Переход с Nginx Ingress Controller на Kubernetes Gateway API (замена `ingress-nginx` на нативный Gateway API с Cilium в роли реализации)
+
+---
 
 ## Разработка
 ### Необходимо
