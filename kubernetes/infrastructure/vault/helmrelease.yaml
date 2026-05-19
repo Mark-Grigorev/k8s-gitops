@@ -23,6 +23,7 @@ spec:
           memory: 280Mi
           cpu: 150m
     injector:
+      affinity: ""
       resourses:
         requests:
           memory: 100Mi
