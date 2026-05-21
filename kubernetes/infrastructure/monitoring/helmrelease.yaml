@@ -26,3 +26,17 @@ spec:
         nodePort: 30900
       prometheusSpec:
         retention: 4d
+    prometheus-node-exporter:
+      extraArgs:
+        - --collector.systemd
+        - --collector.systemd.unit-include=postgresql@17-main.service
+        - --collector.textfile.directory=/host/textfile_collector
+      extraHostVolumeMounts:
+        - name: textfile-collector
+          hostPath: /var/lib/node_exporter/textfile_collector
+          mountPath: /host/textfile_collector
+          readOnly: true
+        - name: dbus
+          hostPath: /run/dbus/system_bus_socket
+          mountPath: /run/dbus/system_bus_socket
+          readOnly: false
