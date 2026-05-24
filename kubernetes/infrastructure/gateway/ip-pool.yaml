@@ -1,0 +1,7 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: vps-pool
+spec:
+  blocks:
+    - cidr: "${VPS_IP/32"
