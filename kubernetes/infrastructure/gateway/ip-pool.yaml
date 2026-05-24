@@ -4,4 +4,4 @@ metadata:
   name: vps-pool
 spec:
   blocks:
-    - cidr: "${VPS_IP/32"
+    - cidr: "${VPS_IP}/32"
