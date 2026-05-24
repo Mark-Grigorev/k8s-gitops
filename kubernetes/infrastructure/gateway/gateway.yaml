@@ -23,7 +23,6 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: fingo-tls
-            namespace: apps
       allowedRoutes:
         namespaces:
           from: All
@@ -36,7 +35,6 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: tanks-fingo-tls
-            namespace: apps
       allowedRoutes:
         namespaces:
           from: All
@@ -49,7 +47,6 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: alexstav-tls
-            namespace: apps
       allowedRoutes:
         namespaces:
           from: All
@@ -62,7 +59,6 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: mark-alldevops-tls
-            namespace: apps
       allowedRoutes:
         namespaces:
           from: All
