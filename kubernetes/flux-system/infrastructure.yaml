@@ -15,16 +15,21 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: ingress-nginx
+  name: gateway
   namespace: flux-system
 spec:
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: cluster-vars
   interval: 10m
-  path: ./kubernetes/infrastructure/ingress-nginx
+  path: ./kubernetes/infrastructure/gateway
   prune: true
   sourceRef: 
     kind: GitRepository
     name: flux-system
-
+  dependsOn:
+    - name: infrastructure
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -40,8 +45,9 @@ spec:
     name: flux-system
   dependsOn:
     - name: infrastructure
-    - name: ingress-nginx
+    - name: gateway
     - name: vault
+#   - name: ingress-nginx
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -91,5 +97,19 @@ spec:
     name: flux-system
   dependsOn:
     - name: infrastructure
-    - name: ingress-nginx
     - name: local-path
+    - name: gateway
+#   - name: ingress-nginx
+
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: ingress-nginx
+#   namespace: flux-system
+# spec:
+#   interval: 10m
+#   path: ./kubernetes/infrastructure/ingress-nginx
+#   prune: true
+#   sourceRef: 
+#     kind: GitRepository
+#     name: flux-system
