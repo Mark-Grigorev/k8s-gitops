@@ -16,4 +16,5 @@ spec:
   values:
     crds:
       enabled: true
-    enableGatewayAPI: true
+    extraArgs: 
+      - --enable-gateway-api
