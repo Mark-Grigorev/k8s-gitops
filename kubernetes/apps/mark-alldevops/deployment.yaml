@@ -13,9 +13,11 @@ spec:
       labels:
         app: mark-alldevops
     spec:
+      imagePullSecrets:
+        - name: ghcr-mark     
       containers:
-        - name: nginx
-          image: ghcr.io/mark-grigorev/mark-alldevops:latest
+        - name: mark-alldevops
+          image: ghcr.io/mark-grigorev/mark-alldevops:latest # {"$imagepolicy": "flux-system:mark-alldevops"}
           ports:
             - containerPort: 80
           resources:
