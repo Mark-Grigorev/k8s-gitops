@@ -15,6 +15,7 @@ spec:
               - name: main
                 namespace: networking
                 kind: Gateway
+                sectionName: http
 
 ---
 
@@ -35,3 +36,4 @@ spec:
               - name: main
                 namespace: networking
                 kind: Gateway
+                sectionName: http
