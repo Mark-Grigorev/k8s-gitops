@@ -4,5 +4,5 @@ resources:
   - deployment.yaml
   - service.yaml
   - serviceaccount.yaml
-  - httproute.yaml
-# - ingress.yaml
+  - ingress.yaml
+# - httproute.yaml
