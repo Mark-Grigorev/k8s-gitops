@@ -1,4 +1,4 @@
-apiVersion: kustomize.toolkit.fluxcd.io/v1
+apiVersion: kustomize.config.fluxcd.io/v1
 kind: Kustomization
 resources:
   - image-repository.yaml
