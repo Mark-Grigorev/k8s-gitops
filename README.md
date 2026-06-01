@@ -17,12 +17,13 @@
                       │Nginx Ingress│  hostNetwork, TLS termination
                       └──────┬──────┘
                              │
-       ┌─────────────────────┼──────────────────────┐
-       │                     │                      │
+       ┌─────────────────────┼──────────────────────┬──────────────────────┐
+       │                     │                      │                      │
 ┌──────▼──────┐       ┌──────▼──────┐       ┌──────▼──────┐       ┌──────▼──────┐
 │   fingo     │       │   gotanks   │       │  alexstav   │       │mark-alldevops│
 │ Go + nginx  │       │  Go (game)  │       │   nginx     │       │    nginx     │
-│ fingo.ink   │       │tanks.fingo  │       │  (static)   │       │  (static)   │
+│ fingo.ink   │       │tanks.fingo  │       │ alexstav.dev│       │mark.alldevops│
+│             │       │    .ink     │       │             │       │    .ru       │
 └──────┬──────┘       └──────┬──────┘       └─────────────┘       └─────────────┘
        │                     │
        └──────────┬──────────┘
@@ -31,9 +32,17 @@
            │ PostgreSQL  │         │    Vault      │  секреты (DB, API keys, JWT)
            │  (на хосте) │         │  (injector)  │
            └─────────────┘         └──────────────┘
+
+  WireGuard VPN (внутренний доступ)
+  ┌──────────────────────────────────────────────────┐
+  │  grafana.314vko  →  Grafana (на хосте, :3000)   │
+  │  vault.314vko    →  Vault UI (в кластере)        │
+  │  PostgreSQL      →  прямой доступ к БД           │
+  └──────────────────────────────────────────────────┘
 ```
 
 **GitOps-слой (Flux v2)** следит за этим репозиторием и применяет изменения в кластере автоматически.  
+**Flux Image Automation** отслеживает новые образы в GHCR и автоматически обновляет теги в репо.  
 **Ansible** отвечает за первичную подготовку сервера (конфигурация ОС, установка k8s, Grafana на хосте).
 
 </details>
@@ -51,6 +60,7 @@
 | Cilium                 | CNI, сеть между подами                       | 100 MB    |
 | Nginx Ingress          | Ingress-контроллер, hostNetwork (80/443)     | 300 MB    |
 | Flux v2                | GitOps-оператор (kustomize + helm controller)| 150 MB    |
+| Flux Image Automation  | Автообновление тегов образов в GitOps репо   | —         |
 | cert-manager           | Автоматические TLS сертификаты (Let's Encrypt)| 60 MB   |
 | HashiCorp Vault        | Управление секретами + Agent Injector        | 256 MB    |
 | kube-prometheus-stack  | Prometheus (мониторинг, retention 4d)        | ~300 MB   |
@@ -58,19 +68,20 @@
 
 **Приложения (namespace: apps)**
 
-| Приложение     | Описание                                    | Домен            | ~RAM  |
-|----------------|---------------------------------------------|------------------|-------|
-| fingo          | Go backend + nginx sidecar, секреты из Vault| fingo.ink        | 250 MB|
-| gotanks        | Go multiplayer-игра (tanks), секреты из Vault| tanks.fingo.ink  | 250 MB|
-| alexstav       | Статический сайт (nginx)                    | —                | 64 MB |
-| mark-alldevops | Статический сайт (nginx)                    | —                | 64 MB |
+| Приложение     | Описание                                    | Домен              | ~RAM  |
+|----------------|---------------------------------------------|--------------------|-------|
+| fingo          | Go backend + nginx sidecar, секреты из Vault| fingo.ink          | 250 MB|
+| gotanks        | Go multiplayer-игра (tanks), секреты из Vault| tanks.fingo.ink   | 250 MB|
+| alexstav       | Статический сайт (nginx)                    | alexstav.dev       | 64 MB |
+| mark-alldevops | Статический сайт (nginx), auto-image-update | mark.alldevops.ru  | 64 MB |
 
 **На хосте (вне кластера)**
 
-| Компонент  | Роль                              |
-|------------|-----------------------------------|
-| PostgreSQL | Основная БД для fingo и gotanks   |
-| Grafana    | Дашборды (управляется через Ansible) |
+| Компонент  | Роль                                                          |
+|------------|---------------------------------------------------------------|
+| PostgreSQL | Основная БД для fingo и gotanks                               |
+| Grafana    | Дашборды (управляется через Ansible), Ingress → grafana.314vko|
+| WireGuard  | VPN для внутреннего доступа к Grafana, Vault UI, PostgreSQL   |
 
 </details>
 
@@ -229,12 +240,14 @@ kubectl patch deployment ingress-nginx-controller -n ingress-nginx --type=json -
 - **Container runtime**: containerd + crun
 - **CNI**: Cilium
 - **GitOps**: Flux v2 — Kustomize + HelmRelease
+- **Image Automation**: Flux Image Automation (auto-update image tags в GitOps репо)
 - **Ingress**: Nginx Ingress Controller (hostNetwork)
 - **TLS**: cert-manager + Let's Encrypt
 - **Секреты**: HashiCorp Vault + Vault Agent Injector
 - **Мониторинг**: kube-prometheus-stack (Prometheus) + Grafana на хосте
 - **БД**: PostgreSQL на хосте
 - **Хранилище**: hostPath PV (local-path provisioner)
+- **VPN**: WireGuard (внутренний доступ к Grafana, Vault UI, PostgreSQL)
 - **Приложения**: fingo (Go + nginx), gotanks (Go), alexstav (nginx), mark-alldevops (nginx)
 
 ---
@@ -255,13 +268,14 @@ k8s-gitops/
     ├── apps/                 # Приложения
     │   ├── fingo/            # Go backend + nginx sidecar (fingo.ink)
     │   ├── gotanks/          # Go multiplayer игра (tanks.fingo.ink)
-    │   ├── alexstav/         # Статический сайт
-    │   └── mark-alldevops/   # Статический сайт
+    │   ├── alexstav/         # Статический сайт (alexstav.dev)
+    │   └── mark-alldevops/   # Статический сайт (mark.alldevops.ru), auto-image-update
     └── infrastructure/
         ├── ingress-nginx/    # Ingress-контроллер (hostNetwork)
         ├── cert-manager/     # TLS сертификаты
-        ├── vault/            # HashiCorp Vault + Injector
-        ├── monitoring/       # kube-prometheus-stack
+        ├── vault/            # HashiCorp Vault + Injector + internal Ingress
+        ├── monitoring/       # kube-prometheus-stack + Grafana Ingress (internal)
+        ├── image-automation/ # Flux Image Automation (GHCR → GitOps auto-update)
         └── local-path/       # hostPath PV для Vault и Prometheus
 ```
 
