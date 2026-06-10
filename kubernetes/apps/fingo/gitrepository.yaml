@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: fingo
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://github.com/mark-grigorev/fingo
+  ref:
+    branch: main

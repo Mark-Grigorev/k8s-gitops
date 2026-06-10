@@ -1,0 +1,45 @@
+replicaCount: 1
+
+image:
+  repository: ""
+  tag: "latest"
+
+containerPort: 80
+
+command: []
+env: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 150m
+    memory: 256Mi
+
+service:
+  port: 80
+
+ingress:
+  host: ""
+  tls: true
+  clusterIssuer: letsencrypt-prod
+
+serviceAccount:
+  create: false
+
+vault:
+  enabled: false
+  role: ""
+  template: ""
+
+nginx:
+  enabled: false
+  image: ""
+  resources:
+    requests:
+      cpu: 50m
+      memory: 50Mi
+    limits:
+      cpu: 100m
+      memory: 100Mi

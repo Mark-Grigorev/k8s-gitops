@@ -1,0 +1,4 @@
+apiVersion: v2
+name: webapp
+version: 0.1.0
+description: Generic web application chart

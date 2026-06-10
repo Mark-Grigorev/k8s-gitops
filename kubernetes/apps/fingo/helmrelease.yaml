@@ -1,0 +1,17 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: fingo
+  namespace: apps
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: ./kubernetes/charts/webapp
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  valuesFrom:
+    - kind: ConfigMap
+      name: fingo-values
