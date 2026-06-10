@@ -1,0 +1,17 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vacancy-parser
+  namespace: apps
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: ./kubernetes/charts/webapp
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  valuesFrom:
+    - kind: ConfigMap
+      name: vacancy-parser-values
