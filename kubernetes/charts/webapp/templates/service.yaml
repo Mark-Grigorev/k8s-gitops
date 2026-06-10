@@ -8,4 +8,4 @@ spec:
         app: {{ .Release.Name }}
     ports:
         - port: {{ .Values.service.port }}
-          targetPort: {{ .Values.containerPort }}
+          targetPort: {{ if .Values.nginx.enabled }}80{{ else }}{{ .Values.containerPort }}{{ end }}
