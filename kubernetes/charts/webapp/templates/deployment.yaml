@@ -18,7 +18,7 @@ spec:
                 vault.hashicorp.com/role: {{ .Values.vault.role | quote }}
                 vault.hashicorp.com/agent-inject-secret-config: {{ printf "secret/data/%s" .Release.Name | quote }}
                 vault.hashicorp.com/agent-inject-template-config: |
-{{ .Values.vault.template | nindent 20 }}
+{{ .Values.vault.template | trim | nindent 20 }}
             {{- end }}
         spec:
             {{- if .Values.serviceAccount.create }}
@@ -30,16 +30,16 @@ spec:
                 image: {{ .Values.nginx.image }}
                 ports:
                   - containerPort: 80
-                resources: {{- toYaml .Values.nginx.resources | nindent 16 }}
+                resources: {{- toYaml .Values.nginx.resources | nindent 18 }}
               {{- end }}
               - name: {{ .Release.Name }}
                 image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
                 {{- if .Values.command }}
-                command: {{- toYaml .Values.command | nindent 16 }}
+                command: {{- toYaml .Values.command | nindent 18 }}
                 {{- end }}
                 {{- if .Values.env }}
-                env: {{- toYaml .Values.env | nindent 16 }}
+                env: {{- toYaml .Values.env | nindent 18 }}
                 {{- end }}
                 ports:
                   - containerPort: {{ .Values.containerPort }}
-                resources: {{- toYaml .Values.resources | nindent 16 }}
+                resources: {{- toYaml .Values.resources | nindent 18 }}
