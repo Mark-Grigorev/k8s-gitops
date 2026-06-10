@@ -7,4 +7,4 @@ spec:
   interval: 5m
   url: https://github.com/mark-grigorev/vacancy-parser
   ref:
-    branch: main
+    branch: master
