@@ -4,7 +4,8 @@ metadata:
   name: vacancy-parser
   namespace: apps
 spec:
-  interval: 5m
+  interval: 10m
+  timeout: 10m
   chart:
     spec:
       chart: ./kubernetes/charts/webapp
@@ -12,6 +13,12 @@ spec:
         kind: GitRepository
         name: flux-system
         namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
   valuesFrom:
     - kind: ConfigMap
       name: vacancy-parser-values
