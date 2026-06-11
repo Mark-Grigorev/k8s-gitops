@@ -1,10 +1,10 @@
 apiVersion: image.toolkit.fluxcd.io/v1beta2
-kind: imagePolicy
+kind: ImagePolicy
 metadata:
   name: vacancy-parser
   namespace: flux-system
 spec:
-  ImageRepositoryRef:
+  imageRepositoryRef:
     name: vacancy-parser
   policy:
     semver:
