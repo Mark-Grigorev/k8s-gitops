@@ -26,6 +26,8 @@ spec:
         nodePort: 30900
       prometheusSpec:
         retention: 4d
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: false
     prometheus-node-exporter:
       extraArgs:
         - --collector.systemd
