@@ -29,7 +29,7 @@
        └──────────┬──────────┘
                   │
            ┌──────▼──────┐         ┌──────────────┐
-           │ PostgreSQL  │         │    Vault      │  секреты (DB, API keys, JWT)
+           │ PostgreSQL  │         │    Vault     │  секреты (DB, API keys, JWT)
            │  (на хосте) │         │  (injector)  │
            └─────────────┘         └──────────────┘
 
@@ -80,8 +80,10 @@
 | Компонент  | Роль                                                          |
 |------------|---------------------------------------------------------------|
 | PostgreSQL | Основная БД для fingo и gotanks                               |
+| Redis      | Кэш / брокер на хосте (Ansible, systemd), доступен из подов   |
 | Grafana    | Дашборды (управляется через Ansible), Ingress → grafana.314vko|
 | WireGuard  | VPN для внутреннего доступа к Grafana, Vault UI, PostgreSQL   |
+
 
 </details>
 
@@ -235,7 +237,7 @@ kubectl patch deployment ingress-nginx-controller -n ingress-nginx --type=json -
 
 ## Стек
 
-- **Конфигурация ОС**: Ansible (firewall, Grafana, k8s bootstrap)
+- **Конфигурация ОС**: Ansible (firewall, Grafana, Redis, k8s bootstrap)
 - **Оркестрация**: Kubernetes (kubeadm, single-node, bare-metal)
 - **Container runtime**: containerd + crun
 - **CNI**: Cilium
@@ -246,6 +248,7 @@ kubectl patch deployment ingress-nginx-controller -n ingress-nginx --type=json -
 - **Секреты**: HashiCorp Vault + Vault Agent Injector
 - **Мониторинг**: kube-prometheus-stack (Prometheus) + Grafana на хосте
 - **БД**: PostgreSQL на хосте
+- **Кэш**: Redis на хосте(Ansible, systemd)
 - **Хранилище**: hostPath PV (local-path provisioner)
 - **VPN**: WireGuard (внутренний доступ к Grafana, Vault UI, PostgreSQL)
 - **Приложения**: fingo (Go + nginx), gotanks (Go), alexstav (nginx), mark-alldevops (nginx)
@@ -256,12 +259,13 @@ kubectl patch deployment ingress-nginx-controller -n ingress-nginx --type=json -
 
 ```
 k8s-gitops/
-├── ansible/                  # Конфигурация ОС, firewall, Grafana
+├── ansible/                  # Конфигурация ОС, firewall, Grafana, Redis
 │   ├── inventory/
 │   ├── playbooks/
 │   └── roles/
 │       ├── firewall/
 │       ├── grafana/
+│       └── redis/
 │       └── kubernetes/
 └── kubernetes/
     ├── flux-system/          # Bootstrapped Flux manifests + патчи ресурсов контроллеров
