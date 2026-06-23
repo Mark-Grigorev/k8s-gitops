@@ -1,0 +1,19 @@
+- name: Install redis-server
+  ansible.builtin.apt:
+    name: redis-server
+    state: present
+    update_cache: true
+
+- name: Configure redis (bind + protected-mode)
+  ansible.builtin.blockinfile:
+    path: /etc/redis/redis.conf
+    marker: "# {mark} ANSIBLE MANAGED - redis access"
+    block: |
+      bind 0.0.0.0 -::1
+      protected-mode no
+  notify: Restart redis
+
+- name: Enable and start redis-server
+  ansible.builtin.systemd:
+    name: redis-server
+    state: restarted

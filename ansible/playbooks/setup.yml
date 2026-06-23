@@ -18,3 +18,10 @@
   tags: grafana
   roles:
     - grafana
+
+- name: Setup redis
+  hosts: all
+  become: true
+  tags: redis
+  roles:
+    - redis
