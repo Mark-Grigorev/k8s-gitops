@@ -1,1 +1,2 @@
 ansible_python_interpreter: /usr/bin/python3
+redis_password: "{{ lookup('community.hashi_vault.hashi_vault', 'secret/data/vacancy-parser:REDIS_PASSWORD') }}"

@@ -4,13 +4,21 @@
     state: present
     update_cache: true
 
+- name: Configure redis (bind + auth)
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: "1"
+    state: present
+    reload: true
+
 - name: Configure redis (bind + protected-mode)
   ansible.builtin.blockinfile:
     path: /etc/redis/redis.conf
     marker: "# {mark} ANSIBLE MANAGED - redis access"
     block: |
-      bind 0.0.0.0 -::1
-      protected-mode no
+      bind 127.0.0.1 10.0.0.148
+      protected-mode yes
+      requirepass {{ redis_password }}
   notify: Restart redis
 
 - name: Enable and start redis-server
